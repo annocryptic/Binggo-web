@@ -15,7 +15,7 @@
 <!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- TON -->
+<!-- TON Connect -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <script src="js/config.js"></script>
@@ -29,7 +29,7 @@ firebase.auth().onAuthStateChanged(user=>{
 
 <body>
 
-<!-- ===== TOP NAV ===== -->
+<!-- ===== TOP NAVBAR ===== -->
 <header class="topbar">
 
   <!-- LOGO LEFT -->
@@ -42,76 +42,90 @@ firebase.auth().onAuthStateChanged(user=>{
     <button onclick="showPage('tasks')" class="active">Tasks</button>
     <button onclick="showPage('trading')">Trading</button>
     <button onclick="showPage('leaderboard')">Leaderboard</button>
-    <button onclick="showPage('profile')">Profile</button>
+    <button onclick="showPage('assets')">My Assets</button>
   </nav>
 
-  <!-- PROFILE RIGHT -->
-  <div class="nav-right">
-    <img id="userAvatar" class="avatar">
+  <!-- PROFILE DROPDOWN -->
+  <div class="nav-right dropdown">
+    <img id="userAvatar" class="avatar" src="">
+    <div class="dropdown-content">
+      <button onclick="connectWallet()">Connect Wallet</button>
+      <button onclick="disconnectWallet()">Disconnect</button>
+      <button onclick="logout()">Logout</button>
+    </div>
   </div>
 
 </header>
 
-<!-- ===== MAIN ===== -->
+<!-- ===== MAIN CONTENT ===== -->
 <main class="container">
 
-<section id="tasks" class="page active">
-  <h2>Social Tasks</h2>
-  <div id="taskList"></div>
-</section>
+  <!-- TASKS -->
+  <section id="tasks" class="page active">
+    <h2>Social Tasks</h2>
+    <div id="taskList"></div>
+  </section>
 
-<section id="trading" class="page">
-  <h2>Trading</h2>
+  <!-- TRADING -->
+  <section id="trading" class="page">
+    <h2>Trading</h2>
 
-  <div class="trade-grid">
+    <div class="trade-grid">
 
-    <div class="card">
-      <h3>Market</h3>
-      <div id="marketList"></div>
-    </div>
-
-    <div class="card">
-      <h3>TON Price</h3>
-      <canvas id="depthChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h3>Orderbook</h3>
-
-      <div class="order-grid">
-        <div>
-          <h4>Buy</h4>
-          <input id="buyPrice" placeholder="Price">
-          <input id="buyAmount" placeholder="Amount">
-          <button onclick="placeOrder('buy')">Buy</button>
-        </div>
-
-        <div>
-          <h4>Sell</h4>
-          <input id="sellPrice" placeholder="Price">
-          <input id="sellAmount" placeholder="Amount">
-          <button class="sell" onclick="placeOrder('sell')">Sell</button>
-        </div>
+      <div class="card">
+        <h3>Market</h3>
+        <div id="marketList"></div>
       </div>
+
+      <div class="card">
+        <h3>TON Price</h3>
+        <canvas id="depthChart" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Orderbook</h3>
+
+        <div class="order-grid">
+          <div>
+            <h4>Buy</h4>
+            <input id="buyPrice" placeholder="Price">
+            <input id="buyAmount" placeholder="Amount">
+            <button onclick="placeOrder('buy')">Buy</button>
+          </div>
+
+          <div>
+            <h4>Sell</h4>
+            <input id="sellPrice" placeholder="Price">
+            <input id="sellAmount" placeholder="Amount">
+            <button class="sell" onclick="placeOrder('sell')">Sell</button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
+  </section>
 
-  </div>
-</section>
+  <!-- LEADERBOARD -->
+  <section id="leaderboard" class="page">
+    <h2>Leaderboard</h2>
+    <div id="leaderboardList"></div>
+  </section>
 
-<section id="leaderboard" class="page">
-  <h2>Leaderboard</h2>
-  <div id="leaderboardList"></div>
-</section>
-
-<section id="profile" class="page">
-  <h2>Profile</h2>
-
-  <div class="card">
-    <p id="walletStatus">Not connected</p>
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-</section>
+  <!-- MY ASSETS -->
+  <section id="assets" class="page">
+    <h2>My Assets</h2>
+    <div class="card">
+      <b>Wallet Address:</b>
+      <p id="walletAddress">-</p>
+      <b>TON Balance:</b>
+      <p id="walletBalance">-</p>
+    </div>
+    <div class="card" id="tokenAssets">
+      <h3>Tokens</h3>
+      <div id="userTokens"></div>
+    </div>
+  </section>
 
 </main>
 
