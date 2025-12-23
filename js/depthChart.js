@@ -1,50 +1,38 @@
-let depthChart;
-
-function renderDepthChart(buys, sells) {
-  const buyData = buys
-    .sort((a, b) => a.price - b.price)
-    .map(o => ({ x: o.price, y: o.amount }));
-
-  const sellData = sells
-    .sort((a, b) => a.price - b.price)
-    .map(o => ({ x: o.price, y: o.amount }));
-
-  if (depthChart) depthChart.destroy();
-
-  depthChart = new Chart(
-    document.getElementById("depthChart"),
-    {
-      type: "line",
-      data: {
-        datasets: [
-          {
-            label: "Buy Depth",
-            data: buyData,
-            borderColor: "#22c55e",
-            backgroundColor: "rgba(34,197,94,0.2)",
-            fill: true,
-            stepped: true
-          },
-          {
-            label: "Sell Depth",
-            data: sellData,
-            borderColor: "#ef4444",
-            backgroundColor: "rgba(239,68,68,0.2)",
-            fill: true,
-            stepped: true
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          x: { title: { display: true, text: "Price" } },
-          y: { title: { display: true, text: "Amount" } }
+const ctx = document.getElementById('depthChart').getContext('2d');
+const depthChart = new Chart(ctx, {
+    type:'line',
+    data:{
+        labels: [],
+        datasets:[{
+            label:'Price',
+            data:[],
+            borderColor:'#38bdf8',
+            backgroundColor:'rgba(56,221,248,0.2)',
+            fill:true
+        }]
+    },
+    options:{
+        responsive:true,
+        scales:{
+            x:{display:true},
+            y:{display:true}
         }
-      }
     }
-  );
+});
+
+// Example update live TON price every 3s
+let labels=[], data=[];
+function simulateMarket(){
+    const price = 1 + Math.random()*0.02 - 0.01; // random ±1%
+    const time = new Date().toLocaleTimeString();
+
+    labels.push(time);
+    data.push(price.toFixed(4));
+    if(labels.length>20){ labels.shift(); data.shift(); }
+
+    depthChart.data.labels = labels;
+    depthChart.data.datasets[0].data = data;
+    depthChart.update();
 }
+
+setInterval(simulateMarket,3000);

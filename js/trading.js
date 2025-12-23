@@ -1,118 +1,58 @@
-// ===============================
-// BINGGO TRADING
-// ===============================
+// Example token market
+const marketTokens = [
+  {symbol:"TON", price:1.0},
+  {symbol:"BNG", price:0.05},
+  {symbol:"XYZ", price:0.12}
+];
 
-// element
-const marketList = document.getElementById("marketList");
-
-// ===============================
-// LOAD MARKET TOKENS
-// ===============================
-function loadMarket() {
-  db.collection("tokens")
-    .where("approved", "==", true)
-    .orderBy("created", "desc")
-    .onSnapshot(snapshot => {
-      marketList.innerHTML = "";
-
-      snapshot.forEach(doc => {
-        const t = doc.data();
-
-        const row = document.createElement("div");
-        row.className = "market-row";
-        row.innerHTML = `
-          <div>
-            <b>${t.name}</b> (${t.symbol})
-            <div style="font-size:12px;opacity:.7">
-              Price: ${t.price}
-            </div>
-          </div>
-        `;
-
-        row.onclick = () => {
-          selectToken(doc.id, t);
-        };
-
-        marketList.appendChild(row);
-      });
-    });
+function loadMarket(){
+  const marketDiv = document.getElementById("marketList");
+  marketDiv.innerHTML = "";
+  marketTokens.forEach(token=>{
+    const div = document.createElement("div");
+    div.classList.add("market-item");
+    div.innerText = `${token.symbol}: $${token.price.toFixed(4)}`;
+    marketDiv.appendChild(div);
+  });
 }
 
-// ===============================
-// SELECT TOKEN
-// ===============================
-function selectToken(tokenId, tokenData) {
-  window.currentTokenId = tokenId;
+// Orderbook
+let orderBook = {buy:[], sell:[]};
 
-  // load orderbook
-  if (typeof setActiveToken === "function") {
-    setActiveToken(tokenId);
-  }
+function placeOrder(type){
+  const priceInput = document.getElementById(type=="buy"?"buyPrice":"sellPrice");
+  const amountInput = document.getElementById(type=="buy"?"buyAmount":"sellAmount");
 
-  // load chart placeholder (price label)
-  const priceBox = document.getElementById("tokenPrice");
-  if (priceBox) {
-    priceBox.innerText = tokenData.price;
-  }
+  const price = parseFloat(priceInput.value);
+  const amount = parseFloat(amountInput.value);
+
+  if(!price || !amount) return alert("Enter price & amount");
+
+  orderBook[type].push({price, amount});
+  renderOrderBook();
+  priceInput.value=""; amountInput.value="";
 }
 
-// ===============================
-// CREATE TOKEN (COMMUNITY)
-// ===============================
-window.createToken = function () {
-  const name = document.getElementById("tName").value.trim();
-  const symbol = document.getElementById("tSymbol").value.trim();
-  const supply = parseFloat(document.getElementById("tSupply").value);
-  const desc = document.getElementById("tDesc").value.trim();
+function renderOrderBook(){
+  const buyDiv = document.querySelector("#trading .order-grid div:nth-child(1)");
+  const sellDiv = document.querySelector("#trading .order-grid div:nth-child(2)");
 
-  if (!name || !symbol || !supply) {
-    alert("Complete all fields");
-    return;
-  }
+  buyDiv.innerHTML = "<h4>Buy</h4>";
+  orderBook.buy.forEach(o=>{
+    const el = document.createElement("div");
+    el.innerText=`${o.amount} @ ${o.price}`;
+    buyDiv.appendChild(el);
+  });
 
-  // === CREATE TOKEN DOC ===
-  db.collection("tokens")
-    .add({
-      name: name,
-      symbol: symbol,
-      supply: supply,
-      description: desc,
-      price: window.currentTonPrice || 1,
-      creator: auth.currentUser.uid,
-      approved: false,
-      created: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-      // === CREATE FEE RECORD ===
-      db.collection("fees").add({
-        type: "token",
-        amount: BINGGO_FEE.createToken,
-        currency: "TON",
-        user: auth.currentUser.uid,
-        status: "pending",
-        time: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      alert("Token submitted. Waiting admin approval.");
-      clearCreateForm();
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Failed to create token");
-    });
-};
-
-// ===============================
-// CLEAR FORM
-// ===============================
-function clearCreateForm() {
-  document.getElementById("tName").value = "";
-  document.getElementById("tSymbol").value = "";
-  document.getElementById("tSupply").value = "";
-  document.getElementById("tDesc").value = "";
+  sellDiv.innerHTML = "<h4>Sell</h4>";
+  orderBook.sell.forEach(o=>{
+    const el = document.createElement("div");
+    el.innerText=`${o.amount} @ ${o.price}`;
+    sellDiv.appendChild(el);
+  });
 }
 
-// ===============================
-// INIT
-// ===============================
-loadMarket();
+// Init
+document.addEventListener("DOMContentLoaded",()=>{
+  loadMarket();
+});

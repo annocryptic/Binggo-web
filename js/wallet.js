@@ -1,33 +1,33 @@
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: 'https://binggoweb3.netlify.app/tonconnect-manifest.json'
-});
+let wallet;
 
-// CONNECT
-async function connectWallet() {
-  await tonConnectUI.connectWallet();
+async function connectWallet(){
+  if(wallet) return;
+  wallet = new TonConnectUI();
+  await wallet.connect();
+
+  const address = wallet.account;
+  const balance = await wallet.getBalance(); // TON balance
+  const tokens = await wallet.getTokens(); // user tokens
+
+  updateWalletUI({address, balance, tokens});
 }
 
-// DISCONNECT
-async function disconnectWallet() {
-  await tonConnectUI.disconnect();
-  document.getElementById("walletStatus").innerText = "Not connected";
-  document.getElementById("walletAddress").innerText = "-";
-  document.getElementById("walletBalance").innerText = "-";
+function disconnectWallet(){
+  if(!wallet) return;
+  wallet.disconnect();
+  wallet = null;
+  updateWalletUI({address:'-', balance:'0 TON', tokens:[]});
 }
 
-// LISTEN WALLET STATUS
-tonConnectUI.onStatusChange(async wallet => {
-  if (wallet) {
-    const address = wallet.account.address;
-    document.getElementById("walletStatus").innerText = "Connected";
-    document.getElementById("walletAddress").innerText = address;
+function updateWalletUI(walletInfo){
+  document.getElementById("walletAddress").innerText = walletInfo.address || "-";
+  document.getElementById("walletBalance").innerText = walletInfo.balance || "0 TON";
 
-    // Fetch balance via TON API
-    fetch(`https://tonapi.io/v2/accounts/${address}`)
-      .then(res => res.json())
-      .then(data => {
-        const balance = data.balance / 1e9;
-        document.getElementById("walletBalance").innerText = balance + " TON";
-      });
-  }
-});
+  const tokenDiv = document.getElementById("userTokens");
+  tokenDiv.innerHTML = "";
+  walletInfo.tokens?.forEach(t=>{
+    const el = document.createElement("div");
+    el.innerText = `${t.symbol}: ${t.amount}`;
+    tokenDiv.appendChild(el);
+  });
+}
