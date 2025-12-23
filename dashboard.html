@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BINGGO Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="dashboard.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- TON -->
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
+<script src="js/config.js"></script>
+
+<script>
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user) window.location.href="login.html";
+});
+</script>
+</head>
+
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<header class="topbar">
+
+  <!-- LOGO LEFT -->
+  <div class="nav-left">
+    <img src="binggo-logo.png" class="logo">
+  </div>
+
+  <!-- NAV CENTER -->
+  <nav class="nav-center">
+    <button onclick="showPage('tasks')" class="active">Tasks</button>
+    <button onclick="showPage('trading')">Trading</button>
+    <button onclick="showPage('leaderboard')">Leaderboard</button>
+    <button onclick="showPage('profile')">Profile</button>
+  </nav>
+
+  <!-- PROFILE RIGHT -->
+  <div class="nav-right">
+    <img id="userAvatar" class="avatar">
+  </div>
+
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="container">
+
+<section id="tasks" class="page active">
+  <h2>Social Tasks</h2>
+  <div id="taskList"></div>
+</section>
+
+<section id="trading" class="page">
+  <h2>Trading</h2>
+
+  <div class="trade-grid">
+
+    <div class="card">
+      <h3>Market</h3>
+      <div id="marketList"></div>
+    </div>
+
+    <div class="card">
+      <h3>TON Price</h3>
+      <canvas id="depthChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Orderbook</h3>
+
+      <div class="order-grid">
+        <div>
+          <h4>Buy</h4>
+          <input id="buyPrice" placeholder="Price">
+          <input id="buyAmount" placeholder="Amount">
+          <button onclick="placeOrder('buy')">Buy</button>
+        </div>
+
+        <div>
+          <h4>Sell</h4>
+          <input id="sellPrice" placeholder="Price">
+          <input id="sellAmount" placeholder="Amount">
+          <button class="sell" onclick="placeOrder('sell')">Sell</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="leaderboard" class="page">
+  <h2>Leaderboard</h2>
+  <div id="leaderboardList"></div>
+</section>
+
+<section id="profile" class="page">
+  <h2>Profile</h2>
+
+  <div class="card">
+    <p id="walletStatus">Not connected</p>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="js/dashboard.js"></script>
+<script src="js/trading.js"></script>
+<script src="js/orderbook.js"></script>
+<script src="js/depthChart.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/wallet.js"></script>
+
+<script>
+firebase.auth().onAuthStateChanged(user=>{
+  if(user?.photoURL){
+    document.getElementById("userAvatar").src=user.photoURL;
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BINGGO Admin Panel</title>
+
+<link rel="stylesheet" href="admin.css">
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="../js/config.js"></script>
+</head>
+
+<body>
+
+<h1>🛡️ BINGGO Admin Panel</h1>
+
+<section>
+  <h2>Pending Orders</h2>
+  <div id="orders"></div>
+</section>
+
+<section>
+  <h2>Pending Tokens</h2>
+  <div id="tokens"></div>
+</section>
+
+<section>
+  <h2>Pending Tasks</h2>
+  <div id="tasks"></div>
+</section>
+<section>
+  <h2>Pending Fees</h2>
+  <div id="fees"></div>
+</section>
+
+<script src="admin.js"></script>
+</body>
+</html>

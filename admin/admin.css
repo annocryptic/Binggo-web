@@ -1,0 +1,23 @@
+body {
+  background: #020617;
+  color: #e5e7eb;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+.card {
+  border: 1px solid #1e293b;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+button {
+  margin-right: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
