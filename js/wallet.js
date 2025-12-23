@@ -1,22 +1,31 @@
-let wallet;
+let wallet = null;
 
 async function connectWallet(){
-  if(wallet) return;
-  wallet = new TonConnectUI();
-  await wallet.connect();
+  try{
+    if(wallet) return;
+    wallet = new TonConnectUI();
+    await wallet.connect();
 
-  const address = wallet.account;
-  const balance = await wallet.getBalance(); // TON balance
-  const tokens = await wallet.getTokens(); // user tokens
+    const address = wallet.account;
+    const balance = await wallet.getBalance(); // TON balance
+    const tokens = await wallet.getTokens();
 
-  updateWalletUI({address, balance, tokens});
+    updateWalletUI({address, balance, tokens});
+  }catch(e){
+    alert("Wallet connection failed: "+e.message);
+  }
 }
 
 function disconnectWallet(){
   if(!wallet) return;
   wallet.disconnect();
-  wallet = null;
-  updateWalletUI({address:'-', balance:'0 TON', tokens:[]});
+  wallet=null;
+  updateWalletUI({address:"-", balance:"0 TON", tokens:[]});
+}
+
+function logout(){
+  disconnectWallet();
+  firebase.auth().signOut().then(()=>window.location.href="login.html");
 }
 
 function updateWalletUI(walletInfo){
@@ -25,9 +34,6 @@ function updateWalletUI(walletInfo){
 
   const tokenDiv = document.getElementById("userTokens");
   tokenDiv.innerHTML = "";
-  walletInfo.tokens?.forEach(t=>{
-    const el = document.createElement("div");
-    el.innerText = `${t.symbol}: ${t.amount}`;
-    tokenDiv.appendChild(el);
-  });
+  tokenDiv.innerHTML = `<div>TON: ${walletInfo.balance || 0}</div>
+                        <div>$BING: Coming Soon</div>`;
 }
